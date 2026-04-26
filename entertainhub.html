@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>EntertainHub — Next-Gen Streaming</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0a0a0a;
+      font-family: 'Netflix Sans', 'Helvetica Neue', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* ===== KEYFRAME ANIMATIONS ===== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-60px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(229,9,20,0.4); }
+      50%       { box-shadow: 0 0 0 12px rgba(229,9,20,0); }
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+
+    @keyframes badgePop {
+      0%   { transform: scale(0.8); opacity: 0; }
+      60%  { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-6px); }
+    }
+
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    @keyframes ripple {
+      0%   { transform: scale(0); opacity: 0.6; }
+      100% { transform: scale(4); opacity: 0; }
+    }
+
+    /* ===== APP ===== */
+    .app {
+      max-width: 100%;
+      background: radial-gradient(circle at 10% 20%, #0f0f0f, #000000);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      width: 100%;
+      min-height: 85vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      z-index: 0;
+      filter: brightness(0.7);
+      animation: fadeIn 1.2s ease forwards;
+      transition: transform 8s ease;
+    }
+
+    .hero:hover .hero-bg {
+      transform: scale(1.04);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(110deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.7) 100%);
+      z-index: 1;
+    }
+
+    .hero-bottom-mask {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 35%;
+      background: linear-gradient(0deg, #0a0a0a 0%, transparent 100%);
+      z-index: 2;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: relative;
+      z-index: 30;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 3rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      animation: fadeInDown 0.7s ease forwards;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #E50914, #ff4d4d, #ff8c00, #E50914);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradientShift 4s ease infinite;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: #f0f0f0;
+      text-decoration: none;
+      font-weight: 500;
+      position: relative;
+      transition: color 0.2s;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 2px;
+      background: #E50914;
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a:hover { color: #fff; }
+
+    .signin-btn {
+      background: #E50914 !important;
+      padding: 0.45rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s !important;
+      animation: pulse 2.5s infinite;
+    }
+
+    .signin-btn:hover {
+      background: #c40812 !important;
+      transform: translateY(-2px) scale(1.04) !important;
+      box-shadow: 0 6px 20px rgba(229,9,20,0.5) !important;
+    }
+
+    .signin-btn::after { display: none !important; }
+
+    /* ===== HERO CONTENT ===== */
+    .hero-content {
+      position: relative;
+      z-index: 20;
+      max-width: 1000px;
+      margin: auto auto 5rem auto;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .hero-badge {
+      background: rgba(229,9,20,0.2);
+      backdrop-filter: blur(8px);
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(229,9,20,0.5);
+      animation: badgePop 0.6s ease 0.3s both, float 3s ease 1s infinite;
+      cursor: default;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .hero-badge:hover {
+      background: rgba(229,9,20,0.35);
+      border-color: rgba(229,9,20,0.9);
+    }
+
+    .hero-content h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      text-shadow: 0 2px 15px rgba(0,0,0,0.5);
+      animation: fadeInUp 0.8s ease 0.4s both;
+    }
+
+    .hero-price {
+      font-size: 1.2rem;
+      margin: 1rem 0 1.8rem;
+      animation: fadeInUp 0.8s ease 0.6s both;
+    }
+
+    .email-form {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.8rem;
+      max-width: 580px;
+      margin: 0 auto;
+      animation: fadeInUp 0.8s ease 0.8s both;
+    }
+
+    .email-form input {
+      flex: 1;
+      padding: 1rem 1.2rem;
+      background: rgba(20,20,20,0.85);
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      backdrop-filter: blur(4px);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+    }
+
+    .email-form input:focus {
+      border-color: #E50914;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(229,9,20,0.2);
+      transform: scale(1.01);
+    }
+
+    /* ===== RIPPLE BUTTON ===== */
+    .email-form button {
+      background: #E50914;
+      border: none;
+      padding: 0 1.8rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .email-form button:hover {
+      background: #c40812;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(229,9,20,0.5);
+    }
+
+    .email-form button:active {
+      transform: translateY(0) scale(0.97);
+    }
+
+    .email-form button .ripple-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      animation: ripple 0.6s linear;
+      pointer-events: none;
+    }
+
+    /* ===== TRENDING SECTION — GRID, NO SLIDER ===== */
+    .trending-section {
+      background: linear-gradient(145deg, #080808, #030303);
+      margin: 2rem 0 1rem 0;
+      padding: 3rem 2rem;
+      border-radius: 3rem 3rem 0 0;
+    }
+
+    .section-header {
+      max-width: 1300px;
+      margin: 0 auto 1.8rem auto;
+      padding: 0 1rem;
+      animation: slideInLeft 0.7s ease both;
+    }
+
+    .section-header h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      display: inline-block;
+      border-left: 5px solid #E50914;
+      padding-left: 1rem;
+    }
+
+    /* SLIDER / CAROUSEL */
+    .slider-wrapper {
+      position: relative;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .trending-carousel {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 1rem 1rem 2rem 1rem;
+      scrollbar-width: thin;
+      scrollbar-color: #E50914 #2c2c2c;
+    }
+
+    .trending-carousel::-webkit-scrollbar { display: none; }
+    .trending-carousel { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-60%);
+      background: rgba(229,9,20,0.85);
+      border: none;
+      color: white;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.2s, transform 0.2s;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 15px rgba(229,9,20,0.4);
+    }
+
+    .slider-btn:hover {
+      background: #c40812;
+      transform: translateY(-60%) scale(1.1);
+    }
+
+    .slider-btn.prev { left: 4px; }
+    .slider-btn.next { right: 4px; }
+
+    /* ===== MOVIE CARD ===== */
+    .movie-card-new {
+      background: #171717;
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), box-shadow 0.35s ease;
+      animation: fadeInUp 0.5s ease both;
+    }
+
+    .movie-card-new:hover {
+      transform: translateY(-10px) scale(1.04);
+      box-shadow: 0 25px 40px -10px rgba(229,9,20,0.35), 0 10px 20px rgba(0,0,0,0.6);
+      border-color: rgba(229,9,20,0.4);
+      z-index: 5;
+    }
+
+    .movie-card-new img {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease, filter 0.4s ease;
+    }
+
+    .movie-card-new:hover img {
+      transform: scale(1.08);
+      filter: brightness(0.7);
+    }
+
+    /* play icon overlay on hover */
+    .card-play-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: calc(100% - 68px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .movie-card-new:hover .card-play-overlay {
+      opacity: 1;
+    }
+
+    .play-icon {
+      width: 52px; height: 52px;
+      background: rgba(229,9,20,0.9);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 0 20px rgba(229,9,20,0.7);
+      transform: scale(0.7);
+      transition: transform 0.3s cubic-bezier(.22,.68,0,1.4);
+    }
+
+    .movie-card-new:hover .play-icon {
+      transform: scale(1);
+    }
+
+    .movie-info {
+      padding: 0.7rem;
+      background: #1a1a1a;
+      transition: background 0.3s;
+    }
+
+    .movie-card-new:hover .movie-info {
+      background: #222;
+    }
+
+    .movie-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .trend-badge {
+      background: #E50914;
+      font-size: 0.7rem;
+      border-radius: 30px;
+      padding: 0.2rem 0.7rem;
+      display: inline-block;
+      margin-top: 0.3rem;
+      font-weight: bold;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .movie-card-new:hover .trend-badge {
+      transform: scale(1.08);
+      background: #ff1f2e;
+    }
+
+    /* ===== REASONS GRID ===== */
+    .reasons-grid {
+      max-width: 1300px;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      padding: 0 2rem;
+    }
+
+    .reason-card {
+      background: rgba(20,20,30,0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 1.5rem;
+      padding: 1.8rem;
+      border: 1px solid rgba(229,9,20,0.2);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2),
+                  box-shadow 0.35s ease,
+                  border-color 0.35s ease,
+                  background 0.35s ease;
+    }
+
+    .reason-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: -60px;
+      width: 130px; height: 130px;
+      background: radial-gradient(circle, rgba(229,9,20,0.18) 0%, transparent 70%);
+      transition: transform 0.5s ease, opacity 0.4s;
+      opacity: 0;
+    }
+
+    .reason-card:hover::before {
+      transform: translate(30px, 30px) scale(1.5);
+      opacity: 1;
+    }
+
+    .reason-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px -10px rgba(229,9,20,0.3);
+      border-color: rgba(229,9,20,0.6);
+      background: rgba(30,15,18,0.85);
+    }
+
+    .reason-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.7rem;
+      transition: color 0.2s;
+    }
+
+    .reason-card:hover h3 { color: #ff4d4d; }
+
+    /* emoji bounce on card hover */
+    .reason-card:hover h3 span {
+      display: inline-block;
+      animation: float 0.8s ease infinite;
+    }
+
+    /* ===== FAQ ===== */
+    .faq-list {
+      max-width: 1000px;
+      margin: 2rem auto;
+    }
+
+    .faq-item {
+      background: #1f1f1f;
+      margin-bottom: 0.6rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s, transform 0.2s;
+      overflow: hidden;
+    }
+
+    .faq-item:hover {
+      border-color: rgba(229,9,20,0.3);
+      background: #242424;
+      transform: translateX(4px);
+    }
+
+    .faq-item.active {
+      border-color: rgba(229,9,20,0.5);
+      background: #222;
+    }
+
+    .faq-question {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: white;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .faq-icon {
+      font-size: 1.5rem;
+      transition: transform 0.35s ease, color 0.2s;
+      display: inline-block;
+      color: #aaa;
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(45deg);
+      color: #E50914;
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+      padding: 0 1.5rem;
+      color: #ccc;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 200px;
+      padding: 0 1.5rem 1.2rem 1.5rem;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer-signup {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: #050505;
+      margin-top: 2rem;
+    }
+
+    .footer-links {
+      max-width: 1000px;
+      margin: 2rem auto 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 1rem;
+      font-size: 0.8rem;
+    }
+
+    .footer-links a {
+      color: #aaa;
+      text-decoration: none;
+      transition: color 0.2s, letter-spacing 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: #E50914;
+      letter-spacing: 0.5px;
+    }
+
+    .copy {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.75rem;
+      color: #6c6c6c;
+    }
+
+    /* scroll-reveal utility */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 760px) {
+      .navbar { padding: 1rem 1.2rem; }
+      .hero-content h1 { font-size: 2.2rem; }
+      .trending-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+      .section-header h2 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HERO -->
+  <div class="hero">
+    <img class="hero-bg"
+         src="https://assets.nflxext.com/ffe/siteui/vlv3/fc9ebadf-d77a-4f9b-a0dd-499af5178dc5/web/PK-en-20260330-TRIFECTA-perspective_e0d42c1f-c145-4b90-b034-0cdf04913747_large.jpg"
+         alt="cinematic backdrop"
+         onerror="this.src='https://via.placeholder.com/1920x1080?text=EntertainHub'">
+    <div class="hero-overlay"></div>
+    <div class="hero-bottom-mask"></div>
+
+    <div class="navbar">
+      <div class="logo">🎬 <span>ENTERTAINHUB</span></div>
+      <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Series</a>
+        <a href="#">Movies</a>
+        <a href="#" class="signin-btn">Sign In</a>
+      </div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-badge">✨ NEW SEASON DROPS</div>
+      <h1>Endless entertainment,<br>zero limits.</h1>
+      <div class="hero-price">Starts at PKR 250. Cancel anytime. Watch anywhere.</div>
+      <div class="email-form">
+        <input type="email" placeholder="Email address" id="mainEmail">
+        <button id="mainStartBtn">Get Started <span>▶</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRENDING — GRID (no slider) -->
+  <div class="trending-section">
+    <div class="section-header reveal">
+      <h2>⚡ Now Trending • Fresh & Electric</h2>
+      <p style="margin-top: 8px; color: #bbb;">What the world is watching — new wave selection</p>
+    </div>
+    <div class="slider-wrapper">
+      <button class="slider-btn prev" id="sliderPrev">&#8249;</button>
+      <div class="trending-carousel" id="trendingCarousel"></div>
+      <button class="slider-btn next" id="sliderNext">&#8250;</button>
+    </div>
+  </div>
+
+  <!-- REASONS -->
+  <div class="reasons-grid">
+    <div class="reason-card reveal">
+      <h3><span>📺</span> Ultra HD Streaming</h3>
+      <p>Watch in 4K HDR with immersive spatial audio on any screen.</p>
+    </div>
+    <div class="reason-card reveal">
+      <h3><span>⬇️</span> Offline Mode</h3>
+      <p>Download & take your favorites anywhere — no Wi-Fi needed.</p>
+    </div>
+    <div class="reason-card reveal">
+      <h3><span>🌍</span> Global Library</h3>
+      <p>Explore award-winning originals, blockbusters & local stories.</p>
+    </div>
+    <div class="reason-card reveal">
+      <h3><span>👪</span> Family Profiles</h3>
+      <p>Kids zone + PIN-protected profiles for total control.</p>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div style="max-width: 1100px; margin: 1rem auto 2rem; padding: 0 1.5rem;">
+    <h2 style="font-size: 2rem; margin-bottom: 1rem;" class="reveal">Your Questions, Answered</h2>
+    <div class="faq-list" id="faqList">
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span>What makes EntertainHub different?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">We bring you exclusive originals, cult classics, and the latest hits without hidden fees. Stream on any device, cancel online anytime.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span>How much does it cost?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">Plans from PKR 250 to PKR 1,100 per month. No contracts, no surprises.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span>Can I watch on multiple devices?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">Yes! Watch on 2 to 4 screens simultaneously depending on your plan, plus download on phones & tablets.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span>Is there a free trial?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">We offer special introductory discounts. No free trial but first month offers are available regionally — check signup!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-signup">
+    <h3 style="font-size: 1.5rem;" class="reveal">Ready for unlimited entertainment?</h3>
+    <div class="email-form" style="margin: 1.5rem auto;">
+      <input type="email" placeholder="Your email address" id="footerEmailInput">
+      <button id="footerStartBtn">Join Now →</button>
+    </div>
+    <div class="footer-links">
+      <a href="#">FAQ</a> <a href="#">Help Center</a> <a href="#">Terms of Use</a> <a href="#">Privacy</a>
+      <a href="#">Cookie Preferences</a> <a href="#">Corporate Info</a> <a href="#">Contact Us</a> <a href="#">Speed Test</a>
+      <a href="#">Legal Notices</a> <a href="#">Only on EntertainHub</a>
+    </div>
+    <div class="copy">© 2025 EntertainHub — All trademarks and streaming content belong to their respective owners.</div>
+  </div>
+</div>
+
+<script>
+  const trendingShows = [
+    { title: "ONE PIECE",                   img: "https://i.ebayimg.com/images/g/bosAAOSwLB5egNBa/s-l500.jpg",                                                                                                                                                                                                                                                                            badge: "🔥 #1 Global"  },
+    { title: "Dhurandhar",                  img: "https://mxp-media.ilnmedia.com/media/content/2025/Dec/1---credit---Jio-Studios_6932877fcaaf9.jpg?w=1125&h=1480&cc=1",                                                                                                                                                                                                                  badge: "New Episode"   },
+    { title: "Naruto",                      img: "https://media-cache.cinematerial.com/p/500x/kk8i1bwb/naruto-shippuden-japanese-movie-poster.jpg?v=1456788114",                                                                                                                                                                                                                          badge: "Top Anime"     },
+    { title: "Saiyaara",                    img: "https://media-cache.cinematerial.com/p/500x/mwbgqsi1/saiyaara-indian-movie-poster.jpg?v=1753463453",                                                                                                                                                                                                                                    badge: "Musical Hit"   },
+    { title: "Bhoot Bangla",                img: "https://media-cache.cinematerial.com/p/500x/vuluhdya/bhooth-bangla-indian-movie-poster.jpg?v=1733814295",                                                                                                                                                                                                                               badge: "Horror Comedy" },
+    { title: "Dhurandhar: The Revenge",     img: "https://media-cache.cinematerial.com/p/500x/nvgurmrv/dhurandhar-the-revenge-indian-movie-poster.jpg?v=1773121152",                                                                                                                                                                                                                      badge: "Top 5"         },
+    { title: "The Great Indian Kapil Show", img: "https://occ-0-1917-64.1.nflxso.net/dnm/api/v6/mAcAr9TxZIVbINe88xb3Teg5_OA/AAAABaYisXNk8FH9PL2mj9MTYQFgo8G_1gf9k4mgnowFfLbJR7L5TBNRYF-SKVr6UAwN5h8mKsAI4NVk6FdEiwD80OcF1YlhczIguBaD0OspQgWm37MV_sJPNZ_qM5iVWQVDKJs6.webp?r=cca", badge: "Comedy"        },
+    { title: "Stree 2",                     img: "https://media-cache.cinematerial.com/p/500x/suglhbwb/stree-2-indian-movie-poster.jpg?v=1721223530",                                                                                                                                                                                                                                     badge: "Horror Comedy" },
+    { title: "Jujutsu Kaisen",              img: "https://media-cache.cinematerial.com/p/500x/hcrwrayn/jujutsu-kaisen-japanese-movie-poster.jpg?v=1682193785",                                                                                                                                                                                                                            badge: "New Season"    }
+  ];
+
+  function renderTrending() {
+    const container = document.getElementById('trendingCarousel');
+    if (!container) return;
+    container.innerHTML = '';
+    trendingShows.forEach((show, i) => {
+      const card = document.createElement('div');
+      card.className = 'movie-card-new';
+      card.style.flex = '0 0 200px';
+      card.style.animationDelay = `${i * 0.07}s`;
+      card.innerHTML = `
+        <img src="${show.img}" alt="${show.title}" loading="lazy"
+             onerror="this.style.display='none'">
+        <div class="card-play-overlay">
+          <div class="play-icon">▶</div>
+        </div>
+        <div class="movie-info">
+          <div class="movie-title">${show.title}</div>
+          <span class="trend-badge">${show.badge}</span>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+
+    // Manual buttons
+    document.getElementById('sliderPrev').addEventListener('click', () => {
+      container.scrollBy({ left: -600, behavior: 'smooth' });
+    });
+    document.getElementById('sliderNext').addEventListener('click', () => {
+      container.scrollBy({ left: 600, behavior: 'smooth' });
+    });
+
+    // Auto scroll
+    let autoScroll = setInterval(() => {
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      if (container.scrollLeft >= maxScroll) {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        container.scrollBy({ left: 220, behavior: 'smooth' });
+      }
+    }, 2500);
+
+    // Pause on hover
+    container.addEventListener('mouseenter', () => clearInterval(autoScroll));
+    container.addEventListener('mouseleave', () => {
+      autoScroll = setInterval(() => {
+        const maxScroll = container.scrollWidth - container.clientWidth;
+        if (container.scrollLeft >= maxScroll) {
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          container.scrollBy({ left: 220, behavior: 'smooth' });
+        }
+      }, 2500);
+    });
+  }
+
+  function initFaqModern() {
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const btn = item.querySelector('.faq-question');
+      btn.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+        if (!isActive) item.classList.add('active');
+      });
+    });
+    if (faqItems.length) faqItems[0].classList.add('active');
+  }
+
+  function addRipple(btn) {
+    btn.addEventListener('click', function(e) {
+      const circle = document.createElement('span');
+      circle.classList.add('ripple-circle');
+      const rect = btn.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      circle.style.width = circle.style.height = size + 'px';
+      circle.style.left = (e.clientX - rect.left - size / 2) + 'px';
+      circle.style.top  = (e.clientY - rect.top  - size / 2) + 'px';
+      btn.appendChild(circle);
+      setTimeout(() => circle.remove(), 650);
+    });
+  }
+
+  function handleEmailSignup(inputId, btnId) {
+    const input = document.getElementById(inputId);
+    const btn   = document.getElementById(btnId);
+    if (!input || !btn) return;
+    addRipple(btn);
+    const handler = () => {
+      const email = input.value.trim();
+      if (email && email.includes('@') && email.includes('.')) {
+        alert(`✨ Thanks! We've sent a magic link to ${email}. Start watching now.`);
+        input.value = '';
+      } else {
+        alert('Please enter a valid email address to get started.');
+      }
+    };
+    btn.addEventListener('click', handler);
+    input.addEventListener('keypress', e => { if (e.key === 'Enter') handler(); });
+  }
+
+  // Scroll reveal
+  function initScrollReveal() {
+    const els = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    els.forEach(el => observer.observe(el));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderTrending();
+    initFaqModern();
+    handleEmailSignup('mainEmail', 'mainStartBtn');
+    handleEmailSignup('footerEmailInput', 'footerStartBtn');
+    initScrollReveal();
+
+    document.querySelectorAll('.movie-card-new').forEach(card => {
+      card.addEventListener('click', () => {
+        const t = card.querySelector('.movie-title');
+        if (t) console.log(`✨ Explore: ${t.innerText}`);
+      });
+    });
+  });
+</script>
+</body>
+</html>
