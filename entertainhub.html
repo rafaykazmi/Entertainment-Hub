@@ -401,7 +401,6 @@
   
   const trendingMovies = [
     { 
-      // Replaced ONE PIECE with Mortal Kombat II (poster from given URL)
       title: "Mortal Kombat II", 
       img: "https://preview.redd.it/new-poster-for-mortal-kombat-ii-v0-vtztr88yjolg1.jpeg?width=1080&crop=smart&auto=webp&s=5a8460d4af5d5261f6c737d634a432a373446225", 
       badge: "🔥 New Vision", 
@@ -471,7 +470,7 @@
         targetUrl = item.redirect;
       } else {
         // auto generate: but ensure that for ONE PIECE it's already replaced so no issue.
-        // For Dhurandhar, will become play_dhurandhar.html, etc.
+        // For Dhurandhar, will become play_dhurandhar_2.html, etc.
         targetUrl = generateRedirectFromTitle(item.title);
       }
       
